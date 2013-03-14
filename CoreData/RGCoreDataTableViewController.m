@@ -25,7 +25,28 @@
     return YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	if (!self.document) {
+		[[RGCoreDataManagedDocument sharedDocument] performWithDocument:^(UIManagedDocument *document) {
+			self.document = document;
+			[self setupFetchedResultsController];
+			[self fetchDataIntoDocument];
+		}];
+	}
+}
+
 #pragma mark - Fetching
+
+- (void)fetchDataIntoDocument
+{
+	// override in subclass
+}
+
+- (void)setupFetchedResultsController
+{
+	// override in subclass
+}
 
 - (void)performFetch
 {
