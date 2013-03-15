@@ -19,13 +19,13 @@
 @end
 
 
-@implementation NSString (encoder)
+@implementation NSString (UrlEncoding)
 
-- (NSString *)urlEncodedString {
+- (NSString *)urlEncoded {
 	return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)self, NULL, CFSTR(":/?#[]@!$&’()*+,;="), kCFStringEncodingUTF8));
 }
 
-- (NSString *)urlDecodedString {
+- (NSString *)urlDecoded {
 	return [[self stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
@@ -41,7 +41,32 @@
     else
         NumberOfCallsToSetVisible--;
 
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:(NumberOfCallsToSetVisible > 0)];
+	UIApplication.sharedApplication.networkActivityIndicatorVisible = (NumberOfCallsToSetVisible > 0);
+}
+
+@end
+
+
+@implementation NSObject (NetworkRequest)
+
+- (void)asyncNetworkRequestForUrl:(NSString *)url withCompletion:(void (^)(NSData *response))completion {
+	UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = YES;
+	runOnQueue(@"networkRequestQueue", ^{
+		for (int retries = 0; retries < 3; retries++) {
+			NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url]];
+			if (data.length) {
+				runInForeground(^{
+					UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = NO;
+					completion(data);
+				});
+				return;
+			}
+		}
+		runInForeground(^{
+			UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = NO;
+			completion(nil);
+		});
+	});
 }
 
 @end
@@ -56,7 +81,11 @@ void runInForeground(void (^block)(void)) {
 }
 
 void runInBackground(void (^block)(void)) {
-	dispatch_async(dispatch_queue_create("background queue", NULL), block);
+	runOnQueue(@"backgroundQueue", block);
+}
+
+void runOnQueue(NSString *queue, void (^block)(void)) {
+	dispatch_async(dispatch_queue_create([queue UTF8String], NULL), block);
 }
 
 void runDelayed(double delayInSeconds, void (^block)(void)) {

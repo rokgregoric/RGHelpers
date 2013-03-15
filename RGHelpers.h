@@ -24,10 +24,10 @@
 @end
 
 
-@interface NSString (encoder)
+@interface NSString (UrlEncoding)
 
-- (NSString *)urlEncodedString;
-- (NSString *)urlDecodedString;
+- (NSString *)urlEncoded;
+- (NSString *)urlDecoded;
 
 @end
 
@@ -39,6 +39,14 @@
 @end
 
 
+@interface NSObject (NetworkRequest)
+
+- (void)asyncNetworkRequestForUrl:(NSString *)url withCompletion:(void (^)(NSData *response))completion;
+
+@end
+
+
 void runInForeground(void (^block)(void));
 void runInBackground(void (^block)(void));
+void runOnQueue(NSString *queue, void (^block)(void));
 void runDelayed(double delayInSeconds, void (^block)(void));
