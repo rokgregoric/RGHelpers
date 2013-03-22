@@ -11,9 +11,25 @@
 
 + (void)asyncRequestForUrl:(NSString *)url withCompletion:(void (^)(NSData *response, NSInteger code))completion;
 
-+ (void)asyncGetRequestForUrl:(NSString *)url withParams:(NSDictionary *)params withCompletion:(void (^)(NSData *response, NSInteger code))completion;
-+ (void)asyncPostRequestForUrl:(NSString *)url withParams:(NSDictionary *)params completion:(void (^)(NSData *response, NSInteger code))completion;
-+ (void)asyncPutRequestForUrl:(NSString *)url withParams:(NSDictionary *)params data:(NSData *)data completion:(void (^)(NSData *response, NSInteger code))completion;
-+ (void)asyncDeleteRequestForUrl:(NSString *)url withParams:(NSDictionary *)params withCompletion:(void (^)(NSData *response, NSInteger code))completion;
++ (void)asyncGetRequestForUrl:(NSString *)url
+				   withParams:(NSDictionary *)params
+					  headers:(NSDictionary *)headers
+				   completion:(void (^)(NSData *response, NSInteger code))completion;
+
++ (void)asyncPostRequestForUrl:(NSString *)url
+					withParams:(NSDictionary *)params
+					   headers:(NSDictionary *)headers
+					completion:(void (^)(NSData *response, NSInteger code))completion;
+
++ (void)asyncPutRequestForUrl:(NSString *)url
+				   withParams:(NSDictionary *)params
+					  headers:(NSDictionary *)headers
+						 data:(NSData *)data
+				   completion:(void (^)(NSData *response, NSInteger code))completion;
+
++ (void)asyncDeleteRequestForUrl:(NSString *)url
+					  withParams:(NSDictionary *)params
+						 headers:(NSDictionary *)headers
+					  completion:(void (^)(NSData *response, NSInteger code))completion;
 
 @end
