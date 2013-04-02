@@ -7,6 +7,9 @@
 
 #include "RGHelpers.h"
 
+#pragma mark -
+#pragma mark UIColor (IntegerConversion)
+
 @implementation UIColor (IntegerConversion)
 
 + (UIColor *)colorWithInt:(NSInteger)number {
@@ -18,6 +21,8 @@
 
 @end
 
+#pragma mark -
+#pragma mark NSString (UrlEncoding)
 
 @implementation NSString (UrlEncoding)
 
@@ -31,6 +36,8 @@
 
 @end
 
+#pragma mark -
+#pragma mark UIApplication (NetworkActivity)
 
 @implementation UIApplication (NetworkActivity)
 
@@ -46,6 +53,8 @@
 
 @end
 
+#pragma mark -
+#pragma mark NSObject (NetworkRequest)
 
 @implementation NSObject (NetworkRequest)
 
@@ -71,6 +80,8 @@
 
 @end
 
+#pragma mark -
+#pragma mark GDC helpers
 
 void runInForeground(void (^block)(void)) {
 	if ([NSThread isMainThread]) {
