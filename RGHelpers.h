@@ -16,6 +16,9 @@
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define IS_IPHONE_5 ([[UIScreen mainScreen] bounds].size.height == 568.0f)
 
+#define stringValue(x) [NSString stringWithFormat:@"%d", x]
+
+#pragma mark UIColor (IntegerConversion)
 
 @interface UIColor (IntegerConversion)
 
@@ -23,6 +26,7 @@
 
 @end
 
+#pragma mark NSString (UrlEncoding)
 
 @interface NSString (UrlEncoding)
 
@@ -31,6 +35,7 @@
 
 @end
 
+#pragma mark UIApplication (NetworkActivity)
 
 @interface UIApplication (NetworkActivity)
 
@@ -38,6 +43,7 @@
 
 @end
 
+#pragma mark NSObject (NetworkRequest)
 
 @interface NSObject (NetworkRequest)
 
@@ -45,8 +51,18 @@
 
 @end
 
+#pragma mark GDC helpers
 
 void runInForeground(void (^block)(void));
 void runInBackground(void (^block)(void));
 void runOnQueue(NSString *queue, void (^block)(void));
 void runDelayed(double delayInSeconds, void (^block)(void));
+
+#pragma mark CGRect helpers
+
+CGRect CGRectSetWidth(CGRect rect, CGFloat width);
+CGRect CGRectSetHeight(CGRect rect, CGFloat height);
+CGRect CGRectSetSize(CGRect rect, CGSize size);
+CGRect CGRectSetX(CGRect rect, CGFloat x);
+CGRect CGRectSetY(CGRect rect, CGFloat y);
+CGRect CGRectSetOrigin(CGRect rect, CGPoint origin);

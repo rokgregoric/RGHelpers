@@ -34,7 +34,7 @@ static RGCoreDataManagedDocument *_sharedInstance;
 			NSMigratePersistentStoresAutomaticallyOption: @YES,
 			NSInferMappingModelAutomaticallyOption: @YES,
 		};
-    }
+	}
     return self;
 }
 
@@ -44,9 +44,7 @@ static RGCoreDataManagedDocument *_sharedInstance;
     };
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:[self.document.fileURL path]]) {
-        [self.document saveToURL:self.document.fileURL
-				forSaveOperation:UIDocumentSaveForCreating
-			   completionHandler:OnDocumentDidLoad];
+        [self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:OnDocumentDidLoad];
     } else if (self.document.documentState == UIDocumentStateClosed) {
         [self.document openWithCompletionHandler:OnDocumentDidLoad];
     } else if (self.document.documentState == UIDocumentStateNormal) {

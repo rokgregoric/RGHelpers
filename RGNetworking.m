@@ -56,7 +56,7 @@
 	NSData *data = [params.httpEncoded dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
 
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:20];
-	[request setValue:[NSString stringWithFormat:@"%d", data.length] forHTTPHeaderField:@"Content-Length"];
+	[request setValue:stringValue(data.length) forHTTPHeaderField:@"Content-Length"];
 	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 	for (NSString *field in headers) {
 		[request setValue:[headers objectForKey:field] forHTTPHeaderField:field];
@@ -76,7 +76,7 @@
 	}
 
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:20];
-	[request setValue:[NSString stringWithFormat:@"%d", data.length] forHTTPHeaderField:@"Content-Length"];
+	[request setValue:stringValue(data.length) forHTTPHeaderField:@"Content-Length"];
 	[request setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
 	for (NSString *field in headers) {
 		[request setValue:[headers objectForKey:field] forHTTPHeaderField:field];

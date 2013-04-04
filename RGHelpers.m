@@ -103,3 +103,30 @@ void runDelayed(double delayInSeconds, void (^block)(void)) {
 	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), block);
 }
+
+#pragma mark -
+#pragma mark CGRect helpers
+
+CGRect CGRectSetWidth(CGRect rect, CGFloat width) {
+    return CGRectMake(rect.origin.x, rect.origin.y, width, rect.size.height);
+}
+
+CGRect CGRectSetHeight(CGRect rect, CGFloat height) {
+    return CGRectMake(rect.origin.x, rect.origin.y, rect.size.width, height);
+}
+
+CGRect CGRectSetSize(CGRect rect, CGSize size) {
+    return CGRectMake(rect.origin.x, rect.origin.y, size.width, size.height);
+}
+
+CGRect CGRectSetX(CGRect rect, CGFloat x) {
+    return CGRectMake(x, rect.origin.y, rect.size.width, rect.size.height);
+}
+
+CGRect CGRectSetY(CGRect rect, CGFloat y) {
+    return CGRectMake(rect.origin.x, y, rect.size.width, rect.size.height);
+}
+
+CGRect CGRectSetOrigin(CGRect rect, CGPoint origin) {
+    return CGRectMake(origin.x, origin.y, rect.size.width, rect.size.height);
+}
