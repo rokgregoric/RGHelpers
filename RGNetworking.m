@@ -20,7 +20,12 @@
 		NSHTTPURLResponse *response;
 		NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
 		if (error) {
-			NSLog(@"RGNetworking error: %@", error);
+			if (error.code == -1012) {
+				response = [[NSHTTPURLResponse alloc] initWithURL:nil statusCode:401 HTTPVersion:nil headerFields:nil];
+				data = nil;
+			} else {
+				NSLog(@"RGNetworking error: %@", error);
+			}
 		}
 		runInForeground(^{
 			UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = NO;
