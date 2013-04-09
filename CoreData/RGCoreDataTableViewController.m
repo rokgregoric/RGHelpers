@@ -25,8 +25,8 @@
     return YES;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
+- (void)viewDidLoad {
+	[super viewDidLoad];
 	if (!self.document) {
 		[[RGCoreDataManagedDocument sharedDocument] performWithDocument:^(UIManagedDocument *document) {
 			self.document = document;
