@@ -6,6 +6,7 @@
 //
 
 #import "NSDictionary+HttpParameters.h"
+#import "RGHelpers.h"
 
 @implementation NSDictionary (HttpParameters)
 

@@ -7,6 +7,7 @@
 
 #import "RGNetworking.h"
 #import "NSDictionary+HttpParameters.h"
+#import "RGHelpers.h"
 
 @implementation RGNetworking
 
