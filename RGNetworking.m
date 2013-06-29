@@ -9,6 +9,8 @@
 #import "NSDictionary+HttpParameters.h"
 #import "RGHelpers.h"
 
+#define TIMEOUT 600
+
 @implementation RGNetworking
 
 #pragma mark -
@@ -16,13 +18,12 @@
 
 + (void)asyncURLRequest:(NSMutableURLRequest *)request withCompletion:(void (^)(NSData *response, NSInteger code))completion {
 	UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = YES;
-	runOnQueue(@"networkRequestQueue", ^{
-		NSError *error;
-		NSHTTPURLResponse *response;
-		NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+
+	NSOperationQueue *queue = NSOperationQueue.alloc.init;
+	[NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
 		if (error) {
-			if (error.code == -1012) {
-				response = [[NSHTTPURLResponse alloc] initWithURL:nil statusCode:401 HTTPVersion:nil headerFields:nil];
+			if (error.code == NSURLErrorUserCancelledAuthentication) {
+				response = [NSHTTPURLResponse.alloc initWithURL:nil statusCode:401 HTTPVersion:nil headerFields:nil];
 				data = nil;
 			} else {
 				NSLog(@"RGNetworking error: %@", error);
@@ -30,9 +31,9 @@
 		}
 		runInForeground(^{
 			UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = NO;
-			completion(data, response.statusCode);
+			completion(data, [(NSHTTPURLResponse *)response statusCode]);
 		});
-	});
+	}];
 }
 
 #pragma mark -
@@ -47,7 +48,7 @@
 		url = [NSString stringWithFormat:@"%@?%@", url, params.httpEncoded];
 	}
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:20];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
 	for (NSString *field in headers) {
 		[request setValue:[headers objectForKey:field] forHTTPHeaderField:field];
 	}
@@ -61,7 +62,7 @@
 + (void)asyncPostRequestForUrl:(NSString *)url withParams:(NSDictionary *)params headers:(NSDictionary *)headers completion:(void (^)(NSData *response, NSInteger code))completion {
 	NSData *data = [params.httpEncoded dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:20];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
 	[request setValue:stringValue(data.length) forHTTPHeaderField:@"Content-Length"];
 	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 	for (NSString *field in headers) {
@@ -81,7 +82,7 @@
 		url = [NSString stringWithFormat:@"%@?%@", url, params.httpEncoded];
 	}
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:20];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
 	[request setValue:stringValue(data.length) forHTTPHeaderField:@"Content-Length"];
 	[request setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
 	for (NSString *field in headers) {
@@ -101,7 +102,7 @@
 		url = [NSString stringWithFormat:@"%@?%@", url, params.httpEncoded];
 	}
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:20];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
 	for (NSString *field in headers) {
 		[request setValue:[headers objectForKey:field] forHTTPHeaderField:field];
 	}
