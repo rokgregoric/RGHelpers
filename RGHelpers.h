@@ -6,15 +6,15 @@
 //
 
 #define RGLogObj(i) NSLog(@"%s: %@", #i, i)
-#define RGLogFloat(i) NSLog(@"%s: %f", #i, i)
+#define RGLogFloat(i) NSLog(@"%s: %g", #i, i)
 #define RGLogInt(i) NSLog(@"%s: %d", #i, i)
 
-#define RGLogSize(i) NSLog(@"%s width: %f, height: %f", #i, i.width, i.height)
-#define RGLogPoint(i) NSLog(@"%s x: %f, y: %f", #i, i.x, i.y)
-#define RGLogRect(i) NSLog(@"%s x: %f, y: %f, width: %f, height: %f", #i, i.origin.x, i.origin.y, i.size.width, i.size.height)
+#define RGLogSize(i) NSLog(@"%s width: %g, height: %g", #i, i.width, i.height)
+#define RGLogPoint(i) NSLog(@"%s x: %g, y: %g", #i, i.x, i.y)
+#define RGLogRect(i) NSLog(@"%s x: %g, y: %g, width: %g, height: %g", #i, i.origin.x, i.origin.y, i.size.width, i.size.height)
 
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-#define IS_IPHONE_5 ([[UIScreen mainScreen] bounds].size.height == 568.0f)
+#define IS_IPHONE_5 (UIScreen.mainScreen.bounds.size.height == 568.0f)
 
 #define stringValue(x) [NSString stringWithFormat:@"%d", x]
 
