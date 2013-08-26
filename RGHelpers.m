@@ -100,6 +100,10 @@ void runOnQueue(NSString *queue, void (^block)(void)) {
 }
 
 void runDelayed(double delayInSeconds, void (^block)(void)) {
+#if TARGET_IPHONE_SIMULATOR
+	CGFloat UIAnimationDragCoefficient(void);
+	delayInSeconds *= UIAnimationDragCoefficient();
+#endif
 	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), block);
 }
