@@ -7,13 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^OnDocumentReady) (UIManagedDocument *document);
-
 @interface RGCoreDataManagedDocument : NSObject
 
 @property (nonatomic) UIManagedDocument *document;
 
 + (RGCoreDataManagedDocument *)sharedDocument;
-- (void)performWithDocument:(OnDocumentReady)onDocumentReady;
+- (void)performWithDocument:(void(^)(UIManagedDocument *document))onDocumentReady;
 
 @end

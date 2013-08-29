@@ -16,18 +16,18 @@ static RGCoreDataManagedDocument *_sharedInstance;
 + (RGCoreDataManagedDocument *)sharedDocument {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        _sharedInstance = [[self alloc] init];
+        _sharedInstance = self.new;
     });
     return _sharedInstance;
 }
 
 - (id)init {
-    self = [super init];
+    self = super.init;
     if (self) {
-        NSURL *url = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+        NSURL *url = [NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask].firstObject;
         url = [url URLByAppendingPathComponent:@"CoreDataDatabase"];
 
-        self.document = [[UIManagedDocument alloc] initWithFileURL:url];
+        self.document = [UIManagedDocument.alloc initWithFileURL:url];
 
         // Set our document up for automatic migrations
         self.document.persistentStoreOptions = @{
@@ -38,17 +38,17 @@ static RGCoreDataManagedDocument *_sharedInstance;
     return self;
 }
 
-- (void)performWithDocument:(OnDocumentReady)onDocumentReady {
-    void (^OnDocumentDidLoad)(BOOL) = ^(BOOL success) {
+- (void)performWithDocument:(void(^)(UIManagedDocument *document))onDocumentReady {
+    void (^onDocumentDidLoad)(BOOL) = ^(BOOL success) {
         onDocumentReady(self.document);
     };
 
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[self.document.fileURL path]]) {
-        [self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:OnDocumentDidLoad];
+    if (![NSFileManager.defaultManager fileExistsAtPath:self.document.fileURL.path]) {
+        [self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:onDocumentDidLoad];
     } else if (self.document.documentState == UIDocumentStateClosed) {
-        [self.document openWithCompletionHandler:OnDocumentDidLoad];
+        [self.document openWithCompletionHandler:onDocumentDidLoad];
     } else if (self.document.documentState == UIDocumentStateNormal) {
-        OnDocumentDidLoad(YES);
+        onDocumentDidLoad(YES);
     }
 }
 

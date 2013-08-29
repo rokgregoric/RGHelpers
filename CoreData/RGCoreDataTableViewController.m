@@ -8,27 +8,22 @@
 #import "RGCoreDataTableViewController.h"
 
 @interface RGCoreDataTableViewController()
+
 @property (nonatomic) BOOL beganUpdates;
+
 @end
 
 @implementation RGCoreDataTableViewController
 
 #pragma mark - Properties
 
-@synthesize fetchedResultsController = _fetchedResultsController;
-@synthesize suspendAutomaticTrackingOfChangesInManagedObjectContext = _suspendAutomaticTrackingOfChangesInManagedObjectContext;
-@synthesize debug = _debug;
-@synthesize beganUpdates = _beganUpdates;
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 }
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
+- (void)setupDocument {
 	if (!self.document) {
-		[[RGCoreDataManagedDocument sharedDocument] performWithDocument:^(UIManagedDocument *document) {
+		[RGCoreDataManagedDocument.sharedDocument performWithDocument:^(UIManagedDocument *document) {
 			self.document = document;
 			[self setupFetchedResultsController];
 			[self fetchDataIntoDocument];
@@ -36,37 +31,46 @@
 	}
 }
 
+- (id)init {
+	self = super.init;
+	if (self) {
+		[self setupDocument];
+	}
+	return self;
+}
+
+- (void)awakeFromNib {
+	[super awakeFromNib];
+	[self setupDocument];
+}
+
 #pragma mark - Fetching
 
-- (void)fetchDataIntoDocument
-{
+- (void)fetchDataIntoDocument {
 	// override in subclass
 }
 
-- (void)setupFetchedResultsController
-{
+- (void)setupFetchedResultsController {
 	// override in subclass
 }
 
-- (void)performFetch
-{
+- (void)performFetch {
     if (self.fetchedResultsController) {
         if (self.fetchedResultsController.fetchRequest.predicate) {
-            if (self.debug) NSLog(@"[%@ %@] fetching %@ with predicate: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName, self.fetchedResultsController.fetchRequest.predicate);
+            if (self.debug) NSLog(@"[%@ %@] fetching %@ with predicate: %@", NSStringFromClass(self.class), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName, self.fetchedResultsController.fetchRequest.predicate);
         } else {
-            if (self.debug) NSLog(@"[%@ %@] fetching all %@ (i.e., no predicate)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName);
+            if (self.debug) NSLog(@"[%@ %@] fetching all %@ (i.e., no predicate)", NSStringFromClass(self.class), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName);
         }
         NSError *error;
         [self.fetchedResultsController performFetch:&error];
-        if (error) NSLog(@"[%@ %@] %@ (%@)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), [error localizedDescription], [error localizedFailureReason]);
+        if (error) NSLog(@"[%@ %@] %@ (%@)", NSStringFromClass(self.class), NSStringFromSelector(_cmd), error.localizedDescription, error.localizedFailureReason);
     } else {
-        if (self.debug) NSLog(@"[%@ %@] no NSFetchedResultsController (yet?)", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+        if (self.debug) NSLog(@"[%@ %@] no NSFetchedResultsController (yet?)", NSStringFromClass(self.class), NSStringFromSelector(_cmd));
     }
     [self.tableView reloadData];
 }
 
-- (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
-{
+- (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc {
     NSFetchedResultsController *oldfrc = _fetchedResultsController;
     if (newfrc != oldfrc) {
         _fetchedResultsController = newfrc;
@@ -75,10 +79,10 @@
             self.title = newfrc.fetchRequest.entity.name;
         }
         if (newfrc) {
-            if (self.debug) NSLog(@"[%@ %@] %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), oldfrc ? @"updated" : @"set");
+            if (self.debug) NSLog(@"[%@ %@] %@", NSStringFromClass(self.class), NSStringFromSelector(_cmd), oldfrc ? @"updated" : @"set");
             [self performFetch];
         } else {
-            if (self.debug) NSLog(@"[%@ %@] reset to nil", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+            if (self.debug) NSLog(@"[%@ %@] reset to nil", NSStringFromClass(self.class), NSStringFromSelector(_cmd));
             [self.tableView reloadData];
         }
     }
@@ -86,108 +90,86 @@
 
 #pragma mark - UITableViewDataSource
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return [[self.fetchedResultsController sections] count];
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.fetchedResultsController.sections.count;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [[[self.fetchedResultsController sections] objectAtIndex:section] numberOfObjects];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [[self.fetchedResultsController.sections objectAtIndex:section] numberOfObjects];
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-	return [[[self.fetchedResultsController sections] objectAtIndex:section] name];
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	return [[self.fetchedResultsController.sections objectAtIndex:section] name];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
-{
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
 	return [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
 }
 
-- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
-{
-    return [self.fetchedResultsController sectionIndexTitles];
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    return self.fetchedResultsController.sectionIndexTitles;
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
 
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
-{
-    if (!self.suspendAutomaticTrackingOfChangesInManagedObjectContext) {
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    if (!self.suspendAutomaticTrackingOfChanges) {
         [self.tableView beginUpdates];
         self.beganUpdates = YES;
     }
 }
 
-- (void)controller:(NSFetchedResultsController *)controller
-  didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
-		   atIndex:(NSUInteger)sectionIndex
-	 forChangeType:(NSFetchedResultsChangeType)type
-{
-    if (!self.suspendAutomaticTrackingOfChangesInManagedObjectContext)
-    {
-        switch(type)
-        {
+- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
+    if (!self.suspendAutomaticTrackingOfChanges) {
+        switch(type) {
             case NSFetchedResultsChangeInsert:
-                [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeDelete:
-                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
                 break;
         }
     }
 }
 
 
-- (void)controller:(NSFetchedResultsController *)controller
-   didChangeObject:(id)anObject
-	   atIndexPath:(NSIndexPath *)indexPath
-	 forChangeType:(NSFetchedResultsChangeType)type
-	  newIndexPath:(NSIndexPath *)newIndexPath
-{
-    if (!self.suspendAutomaticTrackingOfChangesInManagedObjectContext)
-    {
-        switch(type)
-        {
+- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
+    if (!self.suspendAutomaticTrackingOfChanges) {
+        switch(type) {
             case NSFetchedResultsChangeInsert:
-                [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeDelete:
-                [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeUpdate:
-                [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeMove:
-                [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
                 break;
         }
     }
 }
 
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
-{
-    if (self.beganUpdates) [self.tableView endUpdates];
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    if (self.beganUpdates) {
+		[self.tableView endUpdates];
+	}
 }
 
-- (void)endSuspensionOfUpdatesDueToContextChanges
-{
-    _suspendAutomaticTrackingOfChangesInManagedObjectContext = NO;
-}
-
-- (void)setSuspendAutomaticTrackingOfChangesInManagedObjectContext:(BOOL)suspend
-{
+- (void)setSuspendAutomaticTrackingOfChanges:(BOOL)suspend {
     if (suspend) {
-        _suspendAutomaticTrackingOfChangesInManagedObjectContext = YES;
+        _suspendAutomaticTrackingOfChanges = YES;
     } else {
-        [self performSelector:@selector(endSuspensionOfUpdatesDueToContextChanges) withObject:0 afterDelay:0];
+		[NSOperationQueue.mainQueue addOperationWithBlock:^{
+			_suspendAutomaticTrackingOfChanges = NO;
+		}];
     }
 }
 

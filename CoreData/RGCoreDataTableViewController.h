@@ -26,7 +26,7 @@
 @property (nonatomic) UIManagedDocument *document;
 
 // The controller (this class fetches nothing if this is not set).
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 // Causes the fetchedResultsController to refetch the data.
 // You almost certainly never need to call this.
@@ -49,9 +49,9 @@
 //  and then set it back to NO at the end of your implementation of that method.
 // It is not necessary (in fact, not desirable) to set this during row deletion or insertion
 //  (but definitely for row moves).
-@property (nonatomic) BOOL suspendAutomaticTrackingOfChangesInManagedObjectContext;
+@property (nonatomic) BOOL suspendAutomaticTrackingOfChanges;
 
 // Set to YES to get some debugging output in the console.
-@property BOOL debug;
+@property (nonatomic) BOOL debug;
 
 @end
