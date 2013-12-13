@@ -96,7 +96,7 @@ void runInBackground(void (^block)(void)) {
 }
 
 void runOnQueue(NSString *queue, void (^block)(void)) {
-	dispatch_async(dispatch_queue_create([queue UTF8String], NULL), block);
+	dispatch_async(dispatch_queue_create([queue UTF8String], DISPATCH_QUEUE_CONCURRENT), block);
 }
 
 void runDelayed(double delayInSeconds, void (^block)(void)) {
