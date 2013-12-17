@@ -18,7 +18,7 @@
 
 #define stringValue(x) [NSString stringWithFormat:@"%d", x]
 
-#pragma mark UIColor (IntegerConversion)
+#pragma mark - UIColor (IntegerConversion)
 
 @interface UIColor (IntegerConversion)
 
@@ -26,7 +26,7 @@
 
 @end
 
-#pragma mark NSString (UrlEncoding)
+#pragma mark - NSString (UrlEncoding)
 
 @interface NSString (UrlEncoding)
 
@@ -35,7 +35,7 @@
 
 @end
 
-#pragma mark UIApplication (NetworkActivity)
+#pragma mark - UIApplication (NetworkActivity)
 
 @interface UIApplication (NetworkActivity)
 
@@ -43,7 +43,7 @@
 
 @end
 
-#pragma mark NSObject (NetworkRequest)
+#pragma mark - NSObject (NetworkRequest)
 
 @interface NSObject (NetworkRequest)
 
@@ -51,14 +51,14 @@
 
 @end
 
-#pragma mark GDC helpers
+#pragma mark - GCD helpers
 
 void runInForeground(void (^block)(void));
 void runInBackground(void (^block)(void));
 void runOnQueue(NSString *queue, void (^block)(void));
 void runDelayed(double delayInSeconds, void (^block)(void));
 
-#pragma mark CGRect helpers
+#pragma mark - CGRect helpers
 
 CGRect CGRectSetWidth(CGRect rect, CGFloat width);
 CGRect CGRectSetHeight(CGRect rect, CGFloat height);

@@ -7,13 +7,12 @@
 
 #include "RGHelpers.h"
 
-#pragma mark -
-#pragma mark UIColor (IntegerConversion)
+#pragma mark - UIColor (IntegerConversion)
 
 @implementation UIColor (IntegerConversion)
 
 + (UIColor *)colorWithInt:(NSInteger)number {
-    return [UIColor colorWithRed:((number & 0xFF0000) >> 16) / 255.0
+	return [UIColor colorWithRed:((number & 0xFF0000) >> 16) / 255.0
 						   green:((number & 0xFF00) >> 8) / 255.0
 							blue:(number & 0xFF) / 255.0
 						   alpha:1];
@@ -21,8 +20,7 @@
 
 @end
 
-#pragma mark -
-#pragma mark NSString (UrlEncoding)
+#pragma mark - NSString (UrlEncoding)
 
 @implementation NSString (UrlEncoding)
 
@@ -36,25 +34,19 @@
 
 @end
 
-#pragma mark -
-#pragma mark UIApplication (NetworkActivity)
+#pragma mark - UIApplication (NetworkActivity)
 
 @implementation UIApplication (NetworkActivity)
 
 - (void)setNetworkActivityIndicatorVisibleWithCounter:(BOOL)setVisible {
-    static NSInteger NumberOfCallsToSetVisible = 0;
-    if (setVisible)
-        NumberOfCallsToSetVisible++;
-    else
-        NumberOfCallsToSetVisible--;
-
-	UIApplication.sharedApplication.networkActivityIndicatorVisible = (NumberOfCallsToSetVisible > 0);
+	static int numberOfCallsToSetVisible = 0;
+	numberOfCallsToSetVisible += setVisible ? +1 : -1;
+	UIApplication.sharedApplication.networkActivityIndicatorVisible = (numberOfCallsToSetVisible > 0);
 }
 
 @end
 
-#pragma mark -
-#pragma mark NSObject (NetworkRequest)
+#pragma mark - NSObject (NetworkRequest)
 
 @implementation NSObject (NetworkRequest)
 
@@ -80,11 +72,10 @@
 
 @end
 
-#pragma mark -
-#pragma mark GDC helpers
+#pragma mark - GCD helpers
 
 void runInForeground(void (^block)(void)) {
-	if ([NSThread isMainThread]) {
+	if (NSThread.isMainThread) {
 		block();
 	} else {
 		dispatch_sync(dispatch_get_main_queue(), block);
@@ -96,7 +87,7 @@ void runInBackground(void (^block)(void)) {
 }
 
 void runOnQueue(NSString *queue, void (^block)(void)) {
-	dispatch_async(dispatch_queue_create([queue UTF8String], DISPATCH_QUEUE_CONCURRENT), block);
+	dispatch_async(dispatch_queue_create(queue.UTF8String, DISPATCH_QUEUE_CONCURRENT), block);
 }
 
 void runDelayed(double delayInSeconds, void (^block)(void)) {
@@ -108,29 +99,28 @@ void runDelayed(double delayInSeconds, void (^block)(void)) {
 	dispatch_after(popTime, dispatch_get_main_queue(), block);
 }
 
-#pragma mark -
-#pragma mark CGRect helpers
+#pragma mark - CGRect helpers
 
 CGRect CGRectSetWidth(CGRect rect, CGFloat width) {
-    return CGRectMake(rect.origin.x, rect.origin.y, width, rect.size.height);
+	return CGRectMake(rect.origin.x, rect.origin.y, width, rect.size.height);
 }
 
 CGRect CGRectSetHeight(CGRect rect, CGFloat height) {
-    return CGRectMake(rect.origin.x, rect.origin.y, rect.size.width, height);
+	return CGRectMake(rect.origin.x, rect.origin.y, rect.size.width, height);
 }
 
 CGRect CGRectSetSize(CGRect rect, CGSize size) {
-    return CGRectMake(rect.origin.x, rect.origin.y, size.width, size.height);
+	return CGRectMake(rect.origin.x, rect.origin.y, size.width, size.height);
 }
 
 CGRect CGRectSetX(CGRect rect, CGFloat x) {
-    return CGRectMake(x, rect.origin.y, rect.size.width, rect.size.height);
+	return CGRectMake(x, rect.origin.y, rect.size.width, rect.size.height);
 }
 
 CGRect CGRectSetY(CGRect rect, CGFloat y) {
-    return CGRectMake(rect.origin.x, y, rect.size.width, rect.size.height);
+	return CGRectMake(rect.origin.x, y, rect.size.width, rect.size.height);
 }
 
 CGRect CGRectSetOrigin(CGRect rect, CGPoint origin) {
-    return CGRectMake(origin.x, origin.y, rect.size.width, rect.size.height);
+	return CGRectMake(origin.x, origin.y, rect.size.width, rect.size.height);
 }
