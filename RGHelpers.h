@@ -16,7 +16,7 @@
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define IS_IPHONE_5 (UIScreen.mainScreen.bounds.size.height == 568.0f)
 
-#define stringValue(x) [NSString stringWithFormat:@"%d", x]
+#define stringValue(x) [NSString stringWithFormat:@"%ld", (long)x]
 
 #pragma mark - UIColor (IntegerConversion)
 
