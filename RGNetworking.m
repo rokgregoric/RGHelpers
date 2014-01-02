@@ -29,7 +29,7 @@
 				NSLog(@"RGNetworking error: %@", error);
 			}
 		}
-		runInForeground(^{
+		runInForegroundAsync(^{
 			UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = NO;
 			completion(data, [(NSHTTPURLResponse *)response statusCode]);
 		});

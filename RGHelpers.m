@@ -56,14 +56,14 @@
 		for (int retries = 0; retries < 3; retries++) {
 			NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url]];
 			if (data.length) {
-				runInForeground(^{
+				runInForegroundAsync(^{
 					UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = NO;
 					completion(data);
 				});
 				return;
 			}
 		}
-		runInForeground(^{
+		runInForegroundAsync(^{
 			UIApplication.sharedApplication.networkActivityIndicatorVisibleWithCounter = NO;
 			completion(nil);
 		});
@@ -74,7 +74,7 @@
 
 #pragma mark - GCD helpers
 
-void runInForeground(void (^block)(void)) {
+void runInForegroundSync(void (^block)(void)) {
 	if (NSThread.isMainThread) {
 		block();
 	} else {
@@ -82,8 +82,12 @@ void runInForeground(void (^block)(void)) {
 	}
 }
 
+void runInForegroundAsync(void (^block)(void)) {
+	dispatch_async(dispatch_get_main_queue(), block);
+}
+
 void runInBackground(void (^block)(void)) {
-	runOnQueue(@"backgroundQueue", block);
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), block);
 }
 
 void runOnQueue(NSString *queue, void (^block)(void)) {

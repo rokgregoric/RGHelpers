@@ -53,7 +53,8 @@
 
 #pragma mark - GCD helpers
 
-void runInForeground(void (^block)(void));
+void runInForegroundSync(void (^block)(void));
+void runInForegroundAsync(void (^block)(void));
 void runInBackground(void (^block)(void));
 void runOnQueue(NSString *queue, void (^block)(void));
 void runDelayed(double delayInSeconds, void (^block)(void));
