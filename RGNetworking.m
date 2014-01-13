@@ -9,7 +9,7 @@
 #import "NSDictionary+HttpParameters.h"
 #import "RGHelpers.h"
 
-#define TIMEOUT 600
+static const NSTimeInterval kTimeout = 600;
 
 @implementation RGNetworking
 
@@ -48,7 +48,7 @@
 		url = [NSString stringWithFormat:@"%@?%@", url, params.httpEncoded];
 	}
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:kTimeout];
 	for (NSString *field in headers) {
 		[request setValue:[headers objectForKey:field] forHTTPHeaderField:field];
 	}
@@ -62,7 +62,7 @@
 + (void)asyncPostRequestForUrl:(NSString *)url withParams:(NSDictionary *)params headers:(NSDictionary *)headers completion:(void (^)(NSData *response, NSInteger code))completion {
 	NSData *data = [params.httpEncoded dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:kTimeout];
 	[request setValue:stringValue(data.length) forHTTPHeaderField:@"Content-Length"];
 	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 	for (NSString *field in headers) {
@@ -82,7 +82,7 @@
 		url = [NSString stringWithFormat:@"%@?%@", url, params.httpEncoded];
 	}
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:kTimeout];
 	[request setValue:stringValue(data.length) forHTTPHeaderField:@"Content-Length"];
 	[request setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
 	for (NSString *field in headers) {
@@ -102,7 +102,7 @@
 		url = [NSString stringWithFormat:@"%@?%@", url, params.httpEncoded];
 	}
 
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:kTimeout];
 	for (NSString *field in headers) {
 		[request setValue:[headers objectForKey:field] forHTTPHeaderField:field];
 	}
