@@ -22,36 +22,28 @@
 }
 
 - (void)setupDocument {
-	if (!self.document) {
-		[RGCoreDataManagedDocument.sharedDocument performWithDocument:^(UIManagedDocument *document) {
-			self.document = document;
-			[self setupFetchedResultsController];
-			[self fetchDataIntoDocument];
-		}];
-	}
+    if (!self.document) {
+        [RGCoreDataManagedDocument.sharedDocument performWithDocument:^(UIManagedDocument *document) {
+            self.document = document;
+            [self setupFetchedResultsController];
+            [self fetchDataIntoDocument];
+        }];
+    }
 }
 
-- (id)init {
-	self = super.init;
-	if (self) {
-		[self setupDocument];
-	}
-	return self;
-}
-
-- (void)awakeFromNib {
-	[super awakeFromNib];
-	[self setupDocument];
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self setupDocument];
 }
 
 #pragma mark - Fetching
 
 - (void)fetchDataIntoDocument {
-	// override in subclass
+    NSAssert(NO, @"You should override this method when subclassing %@.", NSStringFromClass(self.superclass));
 }
 
 - (void)setupFetchedResultsController {
-	// override in subclass
+    NSAssert(NO, @"You should override this method when subclassing %@.", NSStringFromClass(self.superclass));
 }
 
 - (void)performFetch {
@@ -95,15 +87,15 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[self.fetchedResultsController.sections objectAtIndex:section] numberOfObjects];
+    return [self.fetchedResultsController.sections[section] numberOfObjects];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	return [[self.fetchedResultsController.sections objectAtIndex:section] name];
+    return [self.fetchedResultsController.sections[section] name];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
-	return [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
+    return [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
@@ -133,7 +125,6 @@
     }
 }
 
-
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
     if (!self.suspendAutomaticTrackingOfChanges) {
         switch(type) {
@@ -159,17 +150,17 @@
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     if (self.beganUpdates) {
-		[self.tableView endUpdates];
-	}
+        [self.tableView endUpdates];
+    }
 }
 
 - (void)setSuspendAutomaticTrackingOfChanges:(BOOL)suspend {
     if (suspend) {
         _suspendAutomaticTrackingOfChanges = YES;
     } else {
-		[NSOperationQueue.mainQueue addOperationWithBlock:^{
-			_suspendAutomaticTrackingOfChanges = NO;
-		}];
+        [NSOperationQueue.mainQueue addOperationWithBlock:^{
+            _suspendAutomaticTrackingOfChanges = NO;
+        }];
     }
 }
 
