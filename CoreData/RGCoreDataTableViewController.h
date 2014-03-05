@@ -20,7 +20,7 @@
 #import <CoreData/CoreData.h>
 #import "RGCoreDataManagedDocument.h"
 
-@interface RGCoreDataTableViewController : UITableViewController <NSFetchedResultsControllerDelegate>
+@interface RGCoreDataTableViewController : UITableViewController <NSFetchedResultsControllerDelegate, UISearchDisplayDelegate>
 
 // Single Shared UIManagedDocument
 @property (nonatomic) UIManagedDocument *document;
@@ -28,13 +28,16 @@
 // The controller (this class fetches nothing if this is not set).
 @property (nonatomic) NSFetchedResultsController *fetchedResultsController;
 
+// The controller (this class fetches nothing if this is not set).
+@property (nonatomic) NSFetchedResultsController *searchFetchedResultsController;
+
 // Causes the fetchedResultsController to refetch the data.
 // You almost certainly never need to call this.
 // The NSFetchedResultsController class observes the context
 //  (so if the objects in the context change, you do not need to call performFetch
 //   since the NSFetchedResultsController will notice and update the table automatically).
 // This will also automatically be called if you change the fetchedResultsController @property.
-- (void)performFetch;
+- (void)performFetch:(NSFetchedResultsController *)frc;
 
 // Turn this on before making any changes in the managed object context that
 //  are a one-for-one result of the user manipulating rows directly in the table view.

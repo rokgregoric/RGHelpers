@@ -46,111 +46,155 @@
     NSAssert(NO, @"You should override this method when subclassing %@.", NSStringFromClass(self.superclass));
 }
 
-- (void)performFetch {
-    if (self.fetchedResultsController) {
-        if (self.fetchedResultsController.fetchRequest.predicate) {
-            if (self.debug) NSLog(@"[%@ %@] fetching %@ with predicate: %@", NSStringFromClass(self.class), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName, self.fetchedResultsController.fetchRequest.predicate);
+- (void)setupSearchFetchedResultsController {
+    NSAssert(NO, @"You should override this method when subclassing %@.", NSStringFromClass(self.superclass));
+}
+
+- (void)performFetch:(NSFetchedResultsController *)frc {
+    if (frc) {
+        if (frc.fetchRequest.predicate) {
+            if (self.debug) NSLog(@"[%@ %@] fetching %@ with predicate: %@", NSStringFromClass(self.class), NSStringFromSelector(_cmd), frc.fetchRequest.entityName, frc.fetchRequest.predicate);
         } else {
-            if (self.debug) NSLog(@"[%@ %@] fetching all %@ (i.e., no predicate)", NSStringFromClass(self.class), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName);
+            if (self.debug) NSLog(@"[%@ %@] fetching all %@ (i.e., no predicate)", NSStringFromClass(self.class), NSStringFromSelector(_cmd), frc.fetchRequest.entityName);
         }
         NSError *error;
-        [self.fetchedResultsController performFetch:&error];
+        [frc performFetch:&error];
         if (error) NSLog(@"[%@ %@] %@ (%@)", NSStringFromClass(self.class), NSStringFromSelector(_cmd), error.localizedDescription, error.localizedFailureReason);
     } else {
         if (self.debug) NSLog(@"[%@ %@] no NSFetchedResultsController (yet?)", NSStringFromClass(self.class), NSStringFromSelector(_cmd));
     }
-    [self.tableView reloadData];
+    if (frc == self.fetchedResultsController) {
+        [self.tableView reloadData];
+    } else {
+        [self.searchDisplayController.searchResultsTableView reloadData];
+    }
+}
+
+- (void)updateFetchedResultsController:(NSFetchedResultsController *)frc {
+    frc.delegate = self;
+    if ((!self.title) && (!self.navigationController || !self.navigationItem.title)) {
+        self.title = frc.fetchRequest.entity.name;
+    }
+    if (frc) {
+        if (self.debug) NSLog(@"[%@ %@] set", NSStringFromClass(self.class), NSStringFromSelector(_cmd));
+        [self performFetch:frc];
+    } else {
+        if (self.debug) NSLog(@"[%@ %@] reset to nil", NSStringFromClass(self.class), NSStringFromSelector(_cmd));
+    }
 }
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc {
     NSFetchedResultsController *oldfrc = _fetchedResultsController;
     if (newfrc != oldfrc) {
         _fetchedResultsController = newfrc;
-        newfrc.delegate = self;
-        if ((!self.title || [self.title isEqualToString:oldfrc.fetchRequest.entity.name]) && (!self.navigationController || !self.navigationItem.title)) {
-            self.title = newfrc.fetchRequest.entity.name;
-        }
-        if (newfrc) {
-            if (self.debug) NSLog(@"[%@ %@] %@", NSStringFromClass(self.class), NSStringFromSelector(_cmd), oldfrc ? @"updated" : @"set");
-            [self performFetch];
-        } else {
-            if (self.debug) NSLog(@"[%@ %@] reset to nil", NSStringFromClass(self.class), NSStringFromSelector(_cmd));
-            [self.tableView reloadData];
-        }
+        [self updateFetchedResultsController:newfrc];
+        if (!newfrc) [self.tableView reloadData];
+    }
+}
+
+- (void)setSearchFetchedResultsController:(NSFetchedResultsController *)newfrc {
+    NSFetchedResultsController *oldfrc = _searchFetchedResultsController;
+    if (newfrc != oldfrc) {
+        _searchFetchedResultsController = newfrc;
+        [self updateFetchedResultsController:newfrc];
+        if (!newfrc) [self.searchDisplayController.searchResultsTableView reloadData];
     }
 }
 
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.fetchedResultsController.sections.count;
+    if (tableView == self.tableView)
+        return self.fetchedResultsController.sections.count;
+    return self.searchFetchedResultsController.sections.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.fetchedResultsController.sections[section] numberOfObjects];
+    if (tableView == self.tableView)
+        return [self.fetchedResultsController.sections[section] numberOfObjects];
+    return [self.searchFetchedResultsController.sections[section] numberOfObjects];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return [self.fetchedResultsController.sections[section] name];
+    if (tableView == self.tableView)
+        return [self.fetchedResultsController.sections[section] name];
+    return [self.searchFetchedResultsController.sections[section] name];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
-    return [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
+    if (tableView == self.tableView)
+        return [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
+    return [self.searchFetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return self.fetchedResultsController.sectionIndexTitles;
+    if (tableView == self.tableView)
+        return self.fetchedResultsController.sectionIndexTitles;
+    return self.searchFetchedResultsController.sectionIndexTitles;
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
 
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)frc {
     if (!self.suspendAutomaticTrackingOfChanges) {
-        [self.tableView beginUpdates];
+        if (frc == self.fetchedResultsController) {
+            [self.tableView beginUpdates];
+        } else {
+            [self.searchDisplayController.searchResultsTableView beginUpdates];
+        }
         self.beganUpdates = YES;
     }
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
+- (void)controller:(NSFetchedResultsController *)frc didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
+    UITableView *tableView = frc == self.fetchedResultsController ? self.tableView : self.searchDisplayController.searchResultsTableView;
+    NSUInteger si = frc == self.fetchedResultsController ? 1 : sectionIndex;
     if (!self.suspendAutomaticTrackingOfChanges) {
         switch(type) {
             case NSFetchedResultsChangeInsert:
-                [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView insertSections:[NSIndexSet indexSetWithIndex:si] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeDelete:
-                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView deleteSections:[NSIndexSet indexSetWithIndex:si] withRowAnimation:UITableViewRowAnimationNone];
                 break;
         }
     }
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
+- (void)controller:(NSFetchedResultsController *)frc didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
+    UITableView *tableView = frc == self.fetchedResultsController ? self.tableView : self.searchDisplayController.searchResultsTableView;
+    NSIndexPath *ip1 = frc == self.fetchedResultsController ? [NSIndexPath indexPathForRow:indexPath.row inSection:1] : indexPath;
+    NSIndexPath *ip2 = frc == self.fetchedResultsController ? [NSIndexPath indexPathForRow:newIndexPath.row inSection:1] : newIndexPath;
     if (!self.suspendAutomaticTrackingOfChanges) {
         switch(type) {
             case NSFetchedResultsChangeInsert:
-                [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView insertRowsAtIndexPaths:@[ip2] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeDelete:
-                [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView deleteRowsAtIndexPaths:@[ip1] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeUpdate:
-                [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView reloadRowsAtIndexPaths:@[ip1] withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeMove:
-                [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView deleteRowsAtIndexPaths:@[ip1] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView insertRowsAtIndexPaths:@[ip2] withRowAnimation:UITableViewRowAnimationNone];
                 break;
         }
     }
 }
 
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)frc {
     if (self.beganUpdates) {
-        [self.tableView endUpdates];
+        if (frc == self.fetchedResultsController) {
+            [self.tableView endUpdates];
+        } else {
+            [self.searchDisplayController.searchResultsTableView endUpdates];
+        }
     }
 }
 
@@ -163,5 +207,17 @@
         }];
     }
 }
+
+#pragma mark - UISearchDisplayDelegate
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
+    [self setupSearchFetchedResultsController];
+}
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller willUnloadSearchResultsTableView:(UITableView *)tableView {
+    self.searchFetchedResultsController.delegate = nil;
+    self.searchFetchedResultsController = nil;
+}
+
 
 @end
