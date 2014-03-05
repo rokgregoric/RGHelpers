@@ -59,6 +59,19 @@ static const NSTimeInterval kTimeout = 600;
 #pragma mark -
 #pragma mark POST request method
 
++ (void)asyncPostRequestForUrl:(NSString *)url withData:(NSData *)data headers:(NSDictionary *)headers completion:(void (^)(NSData *response, NSInteger code))completion {
+
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:kTimeout];
+	[request setValue:stringValue(data.length) forHTTPHeaderField:@"Content-Length"];
+	for (NSString *field in headers) {
+		[request setValue:[headers objectForKey:field] forHTTPHeaderField:field];
+	}
+	[request setHTTPMethod:@"POST"];
+	[request setHTTPBody:data];
+
+	[RGNetworking asyncURLRequest:request withCompletion:completion];
+}
+
 + (void)asyncPostRequestForUrl:(NSString *)url withParams:(NSDictionary *)params headers:(NSDictionary *)headers completion:(void (^)(NSData *response, NSInteger code))completion {
 	NSData *data = [params.httpEncoded dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
 

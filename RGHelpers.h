@@ -7,7 +7,7 @@
 
 #define RGLogObj(i) NSLog(@"%s: %@", #i, i)
 #define RGLogFloat(i) NSLog(@"%s: %g", #i, i)
-#define RGLogInt(i) NSLog(@"%s: %d", #i, i)
+#define RGLogInt(i) NSLog(@"%s: %ld", #i, (long)i)
 
 #define RGLogSize(i) NSLog(@"%s width: %g, height: %g", #i, i.width, i.height)
 #define RGLogPoint(i) NSLog(@"%s x: %g, y: %g", #i, i.x, i.y)

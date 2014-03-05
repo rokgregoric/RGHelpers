@@ -17,6 +17,11 @@
 				   completion:(void (^)(NSData *response, NSInteger code))completion;
 
 + (void)asyncPostRequestForUrl:(NSString *)url
+					  withData:(NSData *)data
+					   headers:(NSDictionary *)headers
+					completion:(void (^)(NSData *response, NSInteger code))completion;
+
++ (void)asyncPostRequestForUrl:(NSString *)url
 					withParams:(NSDictionary *)params
 					   headers:(NSDictionary *)headers
 					completion:(void (^)(NSData *response, NSInteger code))completion;
