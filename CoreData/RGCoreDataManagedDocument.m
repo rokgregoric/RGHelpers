@@ -31,10 +31,10 @@ static RGCoreDataManagedDocument *_sharedInstance;
 
         // Set our document up for automatic migrations
         self.document.persistentStoreOptions = @{
-			NSMigratePersistentStoresAutomaticallyOption: @YES,
-			NSInferMappingModelAutomaticallyOption: @YES,
-		};
-	}
+            NSMigratePersistentStoresAutomaticallyOption: @YES,
+            NSInferMappingModelAutomaticallyOption: @YES,
+        };
+    }
     return self;
 }
 
