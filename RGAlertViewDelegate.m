@@ -17,7 +17,7 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (self.delegateHandler) {
-        self.delegateHandler(buttonIndex);
+        self.delegateHandler(alertView, buttonIndex);
     }
 }
 

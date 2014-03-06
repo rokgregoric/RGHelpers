@@ -8,7 +8,7 @@
 //    USAGE:
 //
 //    __weak UIViewController *wself = self;
-//    self.alertViewDelegate = [RGAlertViewDelegate delegateWithHandler:^(NSInteger clickedButtonIndex) {
+//    self.alertViewDelegate = [RGAlertViewDelegate delegateWithHandler:^(UIAlertView *alertView, NSInteger clickedButtonIndex) {
 //        switch (clickedButtonIndex) {
 //            case 0: { // No
 //                [wself noTapped];
@@ -25,7 +25,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void (^DelegateHandler)(NSInteger clickedButtonIndex);
+typedef void (^DelegateHandler)(UIAlertView *alertView, NSInteger clickedButtonIndex);
 
 @interface RGAlertViewDelegate : NSObject <UIAlertViewDelegate>
 
