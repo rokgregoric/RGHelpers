@@ -40,7 +40,14 @@ static RGCoreDataManagedDocument *_sharedInstance;
 
 - (void)performWithDocument:(void(^)(UIManagedDocument *document))onDocumentReady {
     void (^onDocumentDidLoad)(BOOL) = ^(BOOL success) {
-        onDocumentReady(self.document);
+        if (success) {
+            onDocumentReady(self.document);
+        } else {
+            [NSFileManager.defaultManager removeItemAtURL:self.document.fileURL error:nil];
+            [self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:^(BOOL success) {
+                onDocumentReady(self.document);
+            }];
+        }
     };
 
     if (![NSFileManager.defaultManager fileExistsAtPath:self.document.fileURL.path]) {
