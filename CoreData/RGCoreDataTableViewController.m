@@ -32,6 +32,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.deleteAnimation = UITableViewRowAnimationNone;
     [self setupContext];
 }
 
@@ -132,7 +133,7 @@
                 break;
 
             case NSFetchedResultsChangeDelete:
-                [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:self.deleteAnimation];
                 break;
 
             case NSFetchedResultsChangeUpdate:

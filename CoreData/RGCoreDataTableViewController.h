@@ -58,4 +58,7 @@
 // Set to YES to get some debugging output in the console.
 @property (nonatomic) BOOL debug;
 
+// Specify a custom delete animation (default is UITableViewRowAnimationNone)
+@property (nonatomic) UITableViewRowAnimation deleteAnimation;
+
 @end
