@@ -5,6 +5,10 @@
 //  Copyright (c) 2013 Rok Gregorič. All rights reserved.
 //
 
+@import UIKit;
+@import Foundation;
+@import CoreGraphics;
+
 #define RGLogObj(i) NSLog(@"%s: %@", #i, i)
 #define RGLogFloat(i) NSLog(@"%s: %g", #i, i)
 #define RGLogInt(i) NSLog(@"%s: %ld", #i, (long)i)

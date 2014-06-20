@@ -21,29 +21,28 @@
     return YES;
 }
 
-- (void)setupDocument {
-    if (!self.document) {
-        [RGCoreDataManagedDocument.sharedDocument performWithDocument:^(UIManagedDocument *document) {
-            self.document = document;
-            [self setupFetchedResultsController];
-            [self fetchDataIntoDocument];
-        }];
-    }
+- (void)setupContext {
+    [RGCoreDataManagedDocument openWithCompletion:^(BOOL success) {
+        if (!success) return;
+        self.context = [RGCoreDataManagedDocument context];
+        [self setupFetchedResultsController];
+        [self fetchData];
+    }];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setupDocument];
+    [self setupContext];
 }
 
 #pragma mark - Fetching
 
-- (void)fetchDataIntoDocument {
-    NSAssert(NO, @"You should override this method when subclassing %@.", NSStringFromClass(self.superclass));
+- (void)fetchData {
+    NSAssert(NO, @"Override fetchData method when subclassing %@.", NSStringFromClass(self.superclass));
 }
 
 - (void)setupFetchedResultsController {
-    NSAssert(NO, @"You should override this method when subclassing %@.", NSStringFromClass(self.superclass));
+    NSAssert(NO, @"Override setupFetchedResultsController method when subclassing %@.", NSStringFromClass(self.superclass));
 }
 
 - (void)performFetch {

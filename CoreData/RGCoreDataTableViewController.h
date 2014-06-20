@@ -16,17 +16,21 @@
 //  create a NEW NSFetchedResultsController and set this class's fetchedResultsController @property again.
 //
 
-#import <UIKit/UIKit.h>
-#import <CoreData/CoreData.h>
+@import UIKit;
+@import CoreData;
 #import "RGCoreDataManagedDocument.h"
 
 @interface RGCoreDataTableViewController : UITableViewController <NSFetchedResultsControllerDelegate>
 
-// Single Shared UIManagedDocument
-@property (nonatomic) UIManagedDocument *document;
+// Single shared NSManagedObjectContext
+@property (nonatomic) NSManagedObjectContext *context;
 
 // The controller (this class fetches nothing if this is not set).
 @property (nonatomic) NSFetchedResultsController *fetchedResultsController;
+
+- (void)setupContext;
+- (void)fetchData;
+- (void)setupFetchedResultsController;
 
 // Causes the fetchedResultsController to refetch the data.
 // You almost certainly never need to call this.

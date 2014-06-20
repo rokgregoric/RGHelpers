@@ -5,7 +5,7 @@
 //  Copyright (c) 2014 Rok Gregorič. All rights reserved.
 //
 
-#import <CoreData/CoreData.h>
+@import CoreData;
 
 @interface NSManagedObject (Insert)
 

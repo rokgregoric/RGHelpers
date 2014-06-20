@@ -5,13 +5,22 @@
 //  Copyright (c) 2013 Rok Gregorič. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import UIKit;
+@import CoreData;
+@import Foundation;
 
 @interface RGCoreDataManagedDocument : NSObject
 
-@property (nonatomic) UIManagedDocument *document;
+// Initializer - opens the document
++ (void)openWithCompletion:(void(^)(BOOL success))completion;
 
-+ (RGCoreDataManagedDocument *)sharedDocument;
-- (void)performWithDocument:(void(^)(UIManagedDocument *document))onDocumentReady;
+// Single shared UIManagedDocument
++ (UIManagedDocument *)document;
+
+// Single shared NSManagedObjectContext
++ (NSManagedObjectContext *)context;
+
+// Use this method for saving the shared document
++ (void)save;
 
 @end

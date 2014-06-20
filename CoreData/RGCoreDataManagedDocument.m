@@ -6,57 +6,56 @@
 //
 
 #import "RGCoreDataManagedDocument.h"
-#import <CoreData/NSPersistentStoreCoordinator.h>
-
 
 @implementation RGCoreDataManagedDocument
 
-static RGCoreDataManagedDocument *_sharedInstance;
+static UIManagedDocument *_document;
 
-+ (RGCoreDataManagedDocument *)sharedDocument {
++ (void)load {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        _sharedInstance = self.new;
-    });
-    return _sharedInstance;
-}
-
-- (id)init {
-    self = super.init;
-    if (self) {
-        NSURL *url = [NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask].firstObject;
+        NSURL *url = [[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask].firstObject;
         url = [url URLByAppendingPathComponent:@"CoreDataDatabase"];
 
-        self.document = [UIManagedDocument.alloc initWithFileURL:url];
+        _document = [[UIManagedDocument alloc] initWithFileURL:url];
 
         // Set our document up for automatic migrations
-        self.document.persistentStoreOptions = @{
+        _document.persistentStoreOptions = @{
             NSMigratePersistentStoresAutomaticallyOption: @YES,
             NSInferMappingModelAutomaticallyOption: @YES,
         };
-    }
-    return self;
+    });
 }
 
-- (void)performWithDocument:(void(^)(UIManagedDocument *document))onDocumentReady {
-    void (^onDocumentDidLoad)(BOOL) = ^(BOOL success) {
++ (void)openWithCompletion:(void(^)(BOOL success))completion {
+    void (^handler)(BOOL) = ^(BOOL success) {
         if (success) {
-            onDocumentReady(self.document);
+            if (completion) completion(YES);
         } else {
-            [NSFileManager.defaultManager removeItemAtURL:self.document.fileURL error:nil];
-            [self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:^(BOOL success) {
-                onDocumentReady(self.document);
-            }];
+            [NSFileManager.defaultManager removeItemAtURL:_document.fileURL error:nil];
+            [_document saveToURL:_document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:completion];
         }
     };
 
-    if (![NSFileManager.defaultManager fileExistsAtPath:self.document.fileURL.path]) {
-        [self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:onDocumentDidLoad];
-    } else if (self.document.documentState == UIDocumentStateClosed) {
-        [self.document openWithCompletionHandler:onDocumentDidLoad];
-    } else if (self.document.documentState == UIDocumentStateNormal) {
-        onDocumentDidLoad(YES);
+    if (![NSFileManager.defaultManager fileExistsAtPath:_document.fileURL.path]) {
+        [_document saveToURL:_document.fileURL forSaveOperation:UIDocumentSaveForCreating completionHandler:handler];
+    } else if (_document.documentState == UIDocumentStateClosed) {
+        [_document openWithCompletionHandler:handler];
+    } else if (_document.documentState == UIDocumentStateNormal) {
+        handler(YES);
     }
+}
+
++ (UIManagedDocument *)document {
+    return _document;
+}
+
++ (NSManagedObjectContext *)context {
+    return _document.managedObjectContext;
+}
+
++ (void)save {
+    [_document saveToURL:_document.fileURL forSaveOperation:UIDocumentSaveForOverwriting completionHandler:nil];
 }
 
 @end
