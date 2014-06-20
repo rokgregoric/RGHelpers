@@ -27,6 +27,7 @@
 @interface UIColor (IntegerConversion)
 
 + (UIColor *)colorWithInt:(NSInteger)number;
+- (BOOL)isEqualToColor:(UIColor *)otherColor;
 
 @end
 
