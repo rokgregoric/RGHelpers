@@ -9,4 +9,6 @@
 
 @interface RGTapGestureRecognizer : UIGestureRecognizer
 
+@property (nonatomic) CGFloat allowableMovement;           // Default is 10. Maximum movement in pixels allowed before the gesture fails.
+
 @end
