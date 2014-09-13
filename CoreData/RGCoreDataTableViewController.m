@@ -121,6 +121,12 @@
             case NSFetchedResultsChangeDelete:
                 [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
                 break;
+
+            case NSFetchedResultsChangeUpdate:
+            case NSFetchedResultsChangeMove:
+                NSAssert(NO, @"NSFetchedResultsChangeUpdate/Move not handeled.");
+                break;
+
         }
     }
 }
