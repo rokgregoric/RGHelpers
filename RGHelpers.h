@@ -22,6 +22,13 @@
 
 #define stringValue(x) [NSString stringWithFormat:@"%ld", (long)x]
 
+#define CLAMP(x, low, high) ({\
+__typeof__(x) __x = (x); \
+__typeof__(low) __low = (low);\
+__typeof__(high) __high = (high);\
+__x > __high ? __high : (__x < __low ? __low : __x);\
+})
+
 #pragma mark - UIColor (IntegerConversion)
 
 @interface UIColor (IntegerConversion)
