@@ -44,6 +44,30 @@
 
 @end
 
+#pragma mark - UIColor  (LighterAndDarker)
+
+@implementation UIColor (LighterAndDarker)
+
+- (UIColor *)colorWithBrightnessComponent:(CGFloat)brightness {
+    CGFloat h, s, b, a;
+    if ([self getHue:&h saturation:&s brightness:&b alpha:&a])
+        return [UIColor colorWithHue:h
+                          saturation:s
+                          brightness:MIN(b * brightness, 1)
+                               alpha:a];
+    return nil;
+}
+
+- (UIColor *)lighterColor {
+    return [self colorWithBrightnessComponent:1.3];
+}
+
+- (UIColor *)darkerColor {
+    return [self colorWithBrightnessComponent:0.85];
+}
+
+@end
+
 #pragma mark - NSString (UrlEncoding)
 
 @implementation NSString (UrlEncoding)

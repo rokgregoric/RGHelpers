@@ -38,6 +38,16 @@ __x > __high ? __high : (__x < __low ? __low : __x);\
 
 @end
 
+#pragma mark - UIColor (LighterAndDarker)
+
+@interface UIColor (LighterAndDarker)
+
+- (UIColor *)colorWithBrightnessComponent:(CGFloat)brightness;
+- (UIColor *)lighterColor;
+- (UIColor *)darkerColor;
+
+@end
+
 #pragma mark - NSString (UrlEncoding)
 
 @interface NSString (UrlEncoding)
